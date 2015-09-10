@@ -3,12 +3,15 @@ package com.example;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyStore;
+import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 public class Main {
@@ -20,8 +23,12 @@ public class Main {
             HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 
             KeyStore ks = KeyStore.getInstance("PKCS12");
-            FileInputStream fis = new FileInputStream("C:\\temp\\Lighthouse-SDK\\samples\\android\\map-certificate-viewer\\src\\main\\assets\\sample.p12");
-            ks.load(fis, "secret".toCharArray());
+            InputStream fileIn =  Main.class.getResourceAsStream("sample.p12");
+
+            if (fileIn == null)
+                throw new FileNotFoundException("Object store file sample.p12 not found");
+
+            ks.load(fileIn, "secret".toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             kmf.init(ks, "secret".toCharArray());
             SSLContext sc = SSLContext.getInstance("TLS");
